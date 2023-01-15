@@ -90,6 +90,17 @@ export default {
             ],
         };
     },
+    mounted() {
+        if (localStorage.todo) {
+            this.todos = JSON.parse(localStorage.todo);
+        }
+    },
+    watch: {
+        todos(newone) {
+            localStorage.todo = JSON.stringify(newone);
+        },
+    },
+
     methods: {
         addnewTodo() {
             this.todos.push({ name: this.newTodo, status: false });
