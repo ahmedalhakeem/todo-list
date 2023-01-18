@@ -1,19 +1,20 @@
 <template>
     <div id="home-page">
-        <v-container>
+        <v-container @click="generateRandomTodoFn">
+            {{ getName }}
             <v-row>
-                <v-col class="mx-auto pink darken-3 white--text" cols="4"
-                    ><h1 class="text-center">website Todo</h1>
+                <v-col class="mx-auto pink darken-3 white--text" cols="4">
+                    <h1 class="text-center">website Todo</h1>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col class="white mx-auto" cols="4">
-                    <div v-for="(todo, index) in todos" :key="index">
+                    <div v-for="(todo, index) in getTodos.todos" :key="index">
                         <v-checkbox
                             class="d-inline-block"
-                            v-model="todo.status"
+                            v-model="todo.completed"
                         ></v-checkbox>
-                        {{ todo.name }}
+                        {{ todo.todo }}
                     </div>
                     <template>
                         <div class="text-center">
@@ -49,7 +50,7 @@
                                             color="primary"
                                             text
                                             @click="
-                                                addnewTodo(), (dialog = false)
+                                                addnewTodoFn(), (dialog = false)
                                             "
                                         >
                                             Add new todo
@@ -61,34 +62,28 @@
                     </template>
                 </v-col>
             </v-row>
+            <v-row>
+                <h1>Get Random</h1>
+                <v-col cols="3">
+                    <v-card>
+                        <span>{{ getRandom.todo }}</span>
+                    </v-card>
+                </v-col>
+            </v-row>
         </v-container>
     </div>
 </template>
 <script>
+import { mapActions, mapGetters } from "vuex";
+
+//import { mapActions, mapGetters } from "vuex";
 export default {
     name: "HomePage",
+    computed: {
+        ...mapGetters(["getTodos", "getName", "getRandom"]),
+    },
     data: () => {
-        return {
-            newTodo: "",
-            todos: [
-                {
-                    name: "styleguide creation",
-                    status: true,
-                },
-                {
-                    name: "sendwireframe",
-                    status: false,
-                },
-                {
-                    name: "Readibility",
-                    status: false,
-                },
-                {
-                    name: "check color",
-                    status: false,
-                },
-            ],
-        };
+        return { newTodo: "" };
     },
     mounted() {
         if (localStorage.todo) {
@@ -101,9 +96,24 @@ export default {
         },
     },
 
+    created() {
+        this.fetchTodos();
+        this.fetchRandom();
+        this.addnewTodo();
+    },
     methods: {
-        addnewTodo() {
-            this.todos.push({ name: this.newTodo, status: false });
+        ...mapActions(["fetchTodos", "fetchRandom", "addNewTodo"]),
+        generateRandomTodoFn() {
+            console.log("s");
+            this.fetchRandom();
+        },
+        addnewTodoFn() {
+            var payload = {
+                todo: this.newTodo,
+                completed: false,
+                userId: 2,
+            };
+            this.addNewTodo(payload);
         },
     },
 };
