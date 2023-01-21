@@ -39,7 +39,10 @@ const mutations = {
     SET_TODOS: (state, apiData) => (state.todos = apiData),
     SET_RANDOM: (state, data) => (state.randomTodos = data),
     ADD_TODOS: (state, data) => state.todos.todos.push(data),
-    // UPDATE_TODOS(state, data) => state.todos
+    // UPDATE_TODOS: (state, data) => {
+    //     const index = Object.keys(state.todos);
+    //     index.findIndex((t) => console.log(t));
+    // },
 };
 export default {
     state,

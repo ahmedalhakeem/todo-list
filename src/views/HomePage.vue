@@ -1,7 +1,6 @@
 <template>
     <div id="home-page">
         <v-container @click="generateRandomTodoFn">
-            {{ getName }}
             <v-row>
                 <v-col class="mx-auto pink darken-3 white--text" cols="4">
                     <h1 class="text-center">website Todo</h1>
@@ -9,13 +8,35 @@
             </v-row>
             <v-row>
                 <v-col class="white mx-auto" cols="4">
-                    <div v-for="(todo, index) in getTodos.todos" :key="index">
-                        <v-checkbox
-                            class="d-inline-block"
-                            v-model="todo.completed"
-                        ></v-checkbox>
-                        {{ todo.todo }}
-                    </div>
+                    <v-simple-table>
+                        <template v-slot:default>
+                            <thead>
+                                <tr>
+                                    <th class="text-left">todo name</th>
+                                    <th class="text-left">todo status</th>
+                                    <th class="text-left">edit todo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(todo, index) in getTodos.todos"
+                                    :key="index"
+                                >
+                                    <td>{{ todo.todo }}</td>
+                                    <td>
+                                        <v-checkbox
+                                            v-model="todo.completed"
+                                        ></v-checkbox>
+                                    </td>
+                                    <td>
+                                        <v-btn @click="openDialog()"
+                                            >edit todo</v-btn
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </template>
+                    </v-simple-table>
                     <template>
                         <div class="text-center">
                             <v-dialog v-model="dialog" width="500">
@@ -78,12 +99,12 @@ import { mapActions, mapGetters } from "vuex";
 
 //import { mapActions, mapGetters } from "vuex";
 export default {
+    data: () => {
+        return { newTodo: "", dialog: false };
+    },
     name: "HomePage",
     computed: {
         ...mapGetters(["getTodos", "getName", "getRandom"]),
-    },
-    data: () => {
-        return { newTodo: "" };
     },
     mounted() {
         if (localStorage.todo) {
@@ -99,12 +120,10 @@ export default {
     created() {
         this.fetchTodos();
         this.fetchRandom();
-        this.addnewTodo();
     },
     methods: {
         ...mapActions(["fetchTodos", "fetchRandom", "addNewTodo"]),
         generateRandomTodoFn() {
-            console.log("s");
             this.fetchRandom();
         },
         addnewTodoFn() {
@@ -115,6 +134,7 @@ export default {
             };
             this.addNewTodo(payload);
         },
+        openDialog() {},
     },
 };
 </script>
