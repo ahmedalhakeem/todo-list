@@ -8,7 +8,7 @@
             </v-row>
             <v-row>
                 <v-col class="white mx-auto" cols="4">
-                    <v-simple-table>
+                    <v-simple-table fixed-header height="650px">
                         <template v-slot:default>
                             <thead>
                                 <tr>
@@ -37,6 +37,10 @@
                             </tbody>
                         </template>
                     </v-simple-table>
+                    <v-alert dense :type="alrtType" v-model="alrtFlag">
+                        {{ alrtText }}
+                    </v-alert>
+
                     <template>
                         <div class="text-center">
                             <v-dialog v-model="dialog" width="500">
@@ -57,12 +61,17 @@
                                     >
                                         Privacy Policy
                                     </v-card-title>
-
-                                    <v-text-field
-                                        label="Enter a new todo"
-                                        v-model="newTodo"
-                                    ></v-text-field>
-
+                                    <v-form
+                                        ref="todo_form"
+                                        v-model="valid"
+                                        lazy-validation
+                                    >
+                                        <v-text-field
+                                            :rules="nameRules"
+                                            label="Enter a new todo"
+                                            v-model="newTodo"
+                                        ></v-text-field>
+                                    </v-form>
                                     <v-divider></v-divider>
 
                                     <v-card-actions>
@@ -100,7 +109,14 @@ import { mapActions, mapGetters } from "vuex";
 //import { mapActions, mapGetters } from "vuex";
 export default {
     data: () => {
-        return { newTodo: "", dialog: false };
+        return {
+            alrtFlag: false,
+            alrtType: "success",
+            alrtText: "",
+            newTodo: "",
+            dialog: false,
+            nameRules: [(v) => !!v || "هذا الحقل مطلوب"],
+        };
     },
     name: "HomePage",
     computed: {
@@ -127,12 +143,30 @@ export default {
             this.fetchRandom();
         },
         addnewTodoFn() {
+            if (!this.$refs.todo_form.validate()) return;
             var payload = {
                 todo: this.newTodo,
                 completed: false,
                 userId: 2,
             };
-            this.addNewTodo(payload);
+            this.addNewTodo(payload)
+                .then(() => {
+                    // alert("add a new one");
+                    // this.newTodo = null; or
+                    this.$refs.todo_form.reset();
+                    this.alrtType = "success";
+                    this.alrtText = "تمت عملية الاضافة بنجاح";
+                    this.alrtFlag = true;
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.alrtType = "error";
+                    this.alrtText = "فشلت عملية الاضافة ";
+                    this.alrtFlag = true;
+                });
+            setTimeout(() => {
+                this.alrtFlag = false;
+            }, 4000);
         },
         openDialog() {},
     },
