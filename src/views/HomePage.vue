@@ -29,9 +29,52 @@
                                         ></v-checkbox>
                                     </td>
                                     <td>
-                                        <v-btn @click="openDialog()"
-                                            >edit todo</v-btn
+                                        <v-dialog
+                                            transition="dialog-bottom-transition"
+                                            max-width="600"
                                         >
+                                            <template
+                                                v-slot:activator="{ on, attrs }"
+                                            >
+                                                <v-btn
+                                                    x-small
+                                                    color="primary"
+                                                    fab
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                >
+                                                    <v-icon>mdi-pencil</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <template v-slot:default="dialog">
+                                                <v-card>
+                                                    <v-toolbar
+                                                        color="primary"
+                                                        dark
+                                                        >Opening from the
+                                                        bottom</v-toolbar
+                                                    >
+                                                    <v-card-text>
+                                                        <div
+                                                            class="text-h2 pa-12"
+                                                        >
+                                                            {{ todo.todo }}
+                                                        </div>
+                                                    </v-card-text>
+                                                    <v-card-actions
+                                                        class="justify-end"
+                                                    >
+                                                        <v-btn
+                                                            text
+                                                            @click="
+                                                                dialog.value = false
+                                                            "
+                                                            >Close</v-btn
+                                                        >
+                                                    </v-card-actions>
+                                                </v-card>
+                                            </template>
+                                        </v-dialog>
                                     </td>
                                 </tr>
                             </tbody>
@@ -110,6 +153,7 @@ import { mapActions, mapGetters } from "vuex";
 export default {
     data: () => {
         return {
+            showtdo: false,
             alrtFlag: false,
             alrtType: "success",
             alrtText: "",
